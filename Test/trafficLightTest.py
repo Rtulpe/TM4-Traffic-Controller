@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import numpy as np
 
-# Test matrix for the evaluation of traffic light operation
+# Test matrix for the evaluation of traffic light operation.
 cols_name = ['main_red', 'main_red_duration', 'main_green', 'main_green_duration', 'main_yellow', 'main_yellow_duration', \
             'sec_red', 'sec_red_duration', 'sec_green', 'sec_green_duration', 'sec_yellow', 'sec_yellow_duration'] 
 arr = np.zeros((6, 12), dtype=np.int8)
