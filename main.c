@@ -30,7 +30,7 @@ void set_main_lights(int);
 void set_side_lights(int);
 void set_night_lights(int);
 /*******************************************************************************************/
- // Configuration
+// Configuration
 /*******************************************************************************************/
 
 void
@@ -46,11 +46,16 @@ configure_led()
     GPIO_PORTL_DEN_R = 0x33; //Main Ped: G5, R4, Side Ped: G1, R1
     GPIO_PORTL_DIR_R = 0x33;
 
+    GPIO_PORTM_DEN_R = 0x01; //enable pin M1
+    GPIO_PORTM_DIR_R &= ~0x01; //enable pin M1
+    GPIO_PORTM_DATA_R = 0x00; //clear stray data
+
     // GPIO Interrupt / Button
-    GPIO_PORTM_IS_R &= ~0x01; //edge-sensitive Car 3, Side 2, Main 1, Mode 0
+    GPIO_PORTM_IS_R |= 0x01; //level-sensitive Car 3, Side 2, Main 1, Mode 0
     GPIO_PORTM_IBE_R &= ~0x01; //single-edge
     GPIO_PORTM_IEV_R |= 0x01; //rising edge
     GPIO_PORTM_ICR_R |= 0x01; //clears ICR
+    GPIO_PORTM_IM_R |= 0x01; // Enable pin interrupts
 }
 
 void configureTimer1A()
@@ -86,60 +91,60 @@ int main() {
             }
 
             // char c = getchar(); //Replace with button handler
-                    char c = ' ';
+            char c = ' ';
 
-                    switch (c) {
-                        case 'a':
-                            printf("Changing traffic_mode \n");
-                            clear_lights();
-                            traffic_mode++;
-                            light_state = traffic_mode== 1 ? 2 : 0;
-                            if (traffic_mode > 2) traffic_mode = 0;
-                            break;
-                        case 's':
-                            printf("Main pedestrian button \n");
-                            if(traffic_mode==1)break; // Rush hour main button is inactive
-                            if(traffic_mode==0 && (light_state!=0 && light_state<4))break;
-                            printf("Main Ped Flag \n");
-                            main_ped_flag = true;
-                            break;
-                        case 'd':
-                            printf("Side pedestrian button \n");
-                            if(traffic_mode==0 && light_state>4) break;
-                            printf("Side Ped Flag \n");
-                            side_ped_flag = true;
-                            break;
-                        case 'f':
-                            printf("Side car sensor \n");
-                            if (traffic_mode!=1) break;
-                            printf("Side car Flag \n");
-                            car_sensor_flag = true;
-                            break;
-                        default:;
-                    }
+            switch (c) {
+                case 'a':
+                    printf("Changing traffic_mode \n");
+                    clear_lights();
+                    traffic_mode++;
+                    light_state = traffic_mode== 1 ? 2 : 0;
+                    if (traffic_mode > 2) traffic_mode = 0;
+                    break;
+                case 's':
+                    printf("Main pedestrian button \n");
+                    if(traffic_mode==1)break; // Rush hour main button is inactive
+                    if(traffic_mode==0 && (light_state!=0 && light_state<4))break;
+                    printf("Main Ped Flag \n");
+                    main_ped_flag = true;
+                    break;
+                case 'd':
+                    printf("Side pedestrian button \n");
+                    if(traffic_mode==0 && light_state>4) break;
+                    printf("Side Ped Flag \n");
+                    side_ped_flag = true;
+                    break;
+                case 'f':
+                    printf("Side car sensor \n");
+                    if (traffic_mode!=1) break;
+                    printf("Side car Flag \n");
+                    car_sensor_flag = true;
+                    break;
+                default:;
+            }
 
-                    if(next_tick <= ticks){
-                        ticks = 0;
-                        switch (traffic_mode) {
-                                                case 0 :
-                                                    standard_mode(false);
-                                                    break;
+            if(next_tick <= ticks){
+                ticks = 0;
+                switch (traffic_mode) {
+                    case 0 :
+                        standard_mode(false);
+                        break;
 
-                                                case 1 :
-                                                    standard_mode(true);
-                                                    break;
+                    case 1 :
+                        standard_mode(true);
+                        break;
 
-                                                case 2 :
-                                                    night_mode();
-                                                    break;
+                    case 2 :
+                        night_mode();
+                        break;
 
-                                                default:
-                                                    printf("Unknown traffic_mode!!!");
-                                            }
-                    }
-                    ticks++;
+                    default:
+                        printf("Unknown traffic_mode!!!");
                 }
+            }
+            ticks++;
         }
+    }
 }
 
 void standard_mode(bool isRush){
