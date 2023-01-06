@@ -1,7 +1,8 @@
-
-
 /**
- * main.c
+ * Embedded software for the Texas Instruments TivaTM TM4C1294NCPT
+ * micro-controller based traffic light controller
+ *
+ * By Rustenis Tolpeznikas and Obed Oyandut
  */
 
 #include "inc/tm4c1294ncpdt.h"
@@ -22,6 +23,7 @@ int light_state = 0;
 int ticks = 0; // Counting timeouts
 int next_tick = 1; // Sets time out
 
+void button_handler();
 void standard_mode(bool);
 void night_mode();
 void clear_lights();
@@ -51,11 +53,11 @@ configure_led()
     GPIO_PORTM_DATA_R = 0x00; //clear stray data
 
     // GPIO Interrupt / Button
-    GPIO_PORTM_IS_R |= 0x01; //level-sensitive Car 3, Side 2, Main 1, Mode 0
-    GPIO_PORTM_IBE_R &= ~0x01; //single-edge
-    GPIO_PORTM_IEV_R |= 0x01; //rising edge
-    GPIO_PORTM_ICR_R |= 0x01; //clears ICR
-    GPIO_PORTM_IM_R |= 0x01; // Enable pin interrupts
+    GPIO_PORTM_IS_R |= 0x0F; //level-sensitive Car 3, Side 2, Main 1, Mode 0
+    GPIO_PORTM_IBE_R &= ~0x0F; //single-edge
+    GPIO_PORTM_IEV_R |= 0x0F; //rising edge
+    GPIO_PORTM_ICR_R |= 0x0F; //clears ICR
+    GPIO_PORTM_IM_R |= 0x0F; // Enable pin interrupts
 }
 
 void configureTimer1A()
@@ -85,43 +87,7 @@ int main() {
         {
             TIMER1_ICR_R |= 0x00000001; // clear timeout
 
-            if(GPIO_PORTM_RIS_R == 0x1){
-                printf("Button Pressed!");
-                GPIO_PORTM_ICR_R |= 0x1;
-            }
-
-            // char c = getchar(); //Replace with button handler
-            char c = ' ';
-
-            switch (c) {
-                case 'a':
-                    printf("Changing traffic_mode \n");
-                    clear_lights();
-                    traffic_mode++;
-                    light_state = traffic_mode== 1 ? 2 : 0;
-                    if (traffic_mode > 2) traffic_mode = 0;
-                    break;
-                case 's':
-                    printf("Main pedestrian button \n");
-                    if(traffic_mode==1)break; // Rush hour main button is inactive
-                    if(traffic_mode==0 && (light_state!=0 && light_state<4))break;
-                    printf("Main Ped Flag \n");
-                    main_ped_flag = true;
-                    break;
-                case 'd':
-                    printf("Side pedestrian button \n");
-                    if(traffic_mode==0 && light_state>4) break;
-                    printf("Side Ped Flag \n");
-                    side_ped_flag = true;
-                    break;
-                case 'f':
-                    printf("Side car sensor \n");
-                    if (traffic_mode!=1) break;
-                    printf("Side car Flag \n");
-                    car_sensor_flag = true;
-                    break;
-                default:;
-            }
+            button_handler(); // checks button presses
 
             if(next_tick <= ticks){
                 ticks = 0;
@@ -144,6 +110,46 @@ int main() {
             }
             ticks++;
         }
+    }
+}
+
+/**
+ * Responsible for handling the button input
+ */
+void button_handler(){
+    // Mode button
+    // Changes traffic mode: Standard -> Rush - > Night -> Standard
+    if(GPIO_PORTM_RIS_R == 0x1){
+        printf("Mode Button Pressed!");
+        GPIO_PORTM_ICR_R |= 0x1;
+
+        printf("Changing traffic_mode \n");
+        clear_lights();
+        traffic_mode++;
+        light_state = traffic_mode== 1 ? 2 : 0;
+        if (traffic_mode > 2) traffic_mode = 0;
+    }
+
+    // Main pedestrian button
+    if(GPIO_PORTM_RIS_R == 0x2){
+        printf("Main Button Pressed!");
+        GPIO_PORTM_ICR_R |= 0x2;
+
+        if(!(traffic_mode==1) && !(traffic_mode==0 && (light_state!=0 && light_state<4)))main_ped_flag = true;
+    }
+    // Side button
+    if(GPIO_PORTM_RIS_R == 0x4){
+        printf("Side Button Pressed!");
+        GPIO_PORTM_ICR_R |= 0x4;
+
+        if(!(traffic_mode==0 && light_state>4)) side_ped_flag = true;
+    }
+    // Car button
+    if(GPIO_PORTM_RIS_R == 0x8){
+        printf("Car Button Pressed!");
+        GPIO_PORTM_ICR_R |= 0x8;
+
+        if (traffic_mode==1) car_sensor_flag = true;
     }
 }
 
