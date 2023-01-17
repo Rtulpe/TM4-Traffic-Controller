@@ -48,9 +48,9 @@ configure_led()
     GPIO_PORTL_DEN_R = 0x33; //Main Ped: G5, R4, Side Ped: G1, R1
     GPIO_PORTL_DIR_R = 0x33;
 
-    GPIO_PORTM_DEN_R = 0x01; //enable pin M1
-    GPIO_PORTM_DIR_R &= ~0x01; //enable pin M1
-    GPIO_PORTM_DATA_R = 0x00; //clear stray data
+    GPIO_PORTM_DEN_R = 0x0F; //enable pin M1
+    GPIO_PORTM_DIR_R &= ~0x0F; //enable pin M1
+    GPIO_PORTM_DATA_R = 0x0F; //clear stray data
 
     // GPIO Interrupt / Button
     GPIO_PORTM_IS_R |= 0x0F; //level-sensitive Car 3, Side 2, Main 1, Mode 0
@@ -257,14 +257,17 @@ void night_mode(){
         case 0:
             set_night_lights(0);
             light_state = 1;
+            next_tick = 4;
             break;
         case 1:
             set_night_lights(1);
             light_state = 0;
+            next_tick = 4;
             break;
         case 2:
             set_night_lights(2);
             light_state = 0;
+            next_tick = 24;
             break;
         default:
             printf("Warning! Unknown light phase! \n");
