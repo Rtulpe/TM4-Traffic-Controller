@@ -122,6 +122,7 @@ void button_handler(){
     if(GPIO_PORTM_RIS_R == 0x1){
         printf("Mode Button Pressed!");
         GPIO_PORTM_ICR_R |= 0x1;
+        next_tick = 1;
 
         printf("Changing traffic_mode \n");
         clear_lights();
@@ -184,13 +185,13 @@ void standard_mode(bool isRush){
             set_main_lights(2);
             set_side_lights(2);
             light_state = 1;
-            next_tick = 1;
+            next_tick = 4;
             break;
         case 1:
             set_main_lights(3);
             set_side_lights(2);
             light_state = 2;
-            next_tick = 1;
+            next_tick = 4;
             break;
         case 2:
             set_main_lights(0);
@@ -205,21 +206,21 @@ void standard_mode(bool isRush){
             set_main_lights(1);
             set_side_lights(2);
             light_state = 4;
-            next_tick = 2;
+            next_tick = 4;
 
             break;
         case 4:
             set_main_lights(2);
             set_side_lights(2);
             light_state = 5;
-            next_tick = 1;
+            next_tick = 4;
 
             break;
         case 5:
             set_main_lights(2);
             set_side_lights(3);
             light_state = 6;
-            next_tick = 1;
+            next_tick = 4;
 
             break;
         case 6:
@@ -235,7 +236,7 @@ void standard_mode(bool isRush){
             set_main_lights(2);
             set_side_lights(1);
             light_state = 0;
-            next_tick = 2;
+            next_tick = 4;
 
             break;
         default:
