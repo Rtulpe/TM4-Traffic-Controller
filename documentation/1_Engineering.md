@@ -48,11 +48,9 @@
 #### RE7: During all modes pedestrian button should only work when the corresponding light is red.
 
 #### RE8: Pressing the button will do the following:
-*For Main Road: Go to RE5 Phase 1,*
-Adjust Phase 2 (1 sec), Phase 3 (3 sec), continue normal
+*For Main Road: Go to RE5 Phase 1, continue normal*
 
-*For Side Road: Go to RE5 Phase 5,*
-Adjust Phase 6 (1 sec), Phase 7 (3 sec), continue normal
+*For Side Road: Go to RE5 Phase 5, continue normal*
 
 ### Rush Hour mode:
 
