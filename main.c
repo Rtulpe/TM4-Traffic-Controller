@@ -35,10 +35,15 @@ void set_night_lights(int);
 // Configuration
 /*******************************************************************************************/
 
-void
-configure_led()
+/**
+ * Enables Ports K, L and M
+ * K is used for Road Lights
+ * L is used for Pedestrian Lights
+ * M is used for Button Inputs
+ */
+void configure_led()
 {
-    SYSCTL_RCGCGPIO_R = 0x00000E00; /* switch on clock for Port K, L, M */
+    SYSCTL_RCGCGPIO_R = 0x00000E00; // switch on clock for Port K, L, M
 
     while((SYSCTL_PRGPIO_R & 0x00000E00) != 0x00000E00);
 
@@ -60,6 +65,10 @@ configure_led()
     GPIO_PORTM_IM_R |= 0x0F; // Enable pin interrupts
 }
 
+/**
+ * Sets up the timer of the microcontroller
+ * It is set to "tick" every 0.25 of second
+ */
 void configureTimer1A()
 {
     SYSCTL_RCGCTIMER_R = 0x02; //Timer A enable
@@ -72,35 +81,43 @@ void configureTimer1A()
     TIMER1_TAILR_R = 64515; // Preload
     TIMER1_CTL_R = 0x1; // Starts
 }
-/*******************************************************************************************/
 
-// GPIO_PORTK_DATA_R = 0xE7;
-// GPIO_PORTL_DATA_R = 0x33;
-
-/*******************************************************************************************/
+/**
+ * 1. Enables the input/out pins
+ * 2. Configures and switches on the timer
+ * 3. Performs actions only every 0.25 of a second, else time is burned
+ * 4. Checks if any of the buttons were pressed
+ * 5. Handles LED pattern changes. Pattern only changes after specific amount of time
+ */
 
 int main() {
-    configure_led();
-    configureTimer1A();
+    configure_led(); //1. Pin config
+    configureTimer1A();//2. Timer config
     while(1){
-        if(TIMER1_RIS_R == 0x1) // check timeout
+        if(TIMER1_RIS_R == 0x1) //3. check timeout
         {
             TIMER1_ICR_R |= 0x00000001; // clear timeout
 
-            button_handler(); // checks button presses
+            button_handler(); //4. checks button presses
 
+            //5. Code below handles the LED pattern changes
+            // Check is made, so pattern would only change
+            // at certain time
             if(next_tick <= ticks){
                 ticks = 0;
                 switch (traffic_mode) {
-                    case 0 :
+                    case -1 : // Used for testing purposes, in order to synchronize with LabJack
+                        break;
+
+                    case 0 : // Standard LED pattern changes
                         standard_mode(false);
                         break;
 
-                    case 1 :
+                    case 1 : // Rush Hour, Main road LED always stays green, unless prompted
                         standard_mode(true);
                         break;
 
-                    case 2 :
+                    case 2 : // Night mode, road lights blink yellow, unless prompted by pedestrian
                         night_mode();
                         break;
 
@@ -111,6 +128,7 @@ int main() {
             ticks++;
         }
     }
+    return -1; //Shall not be reached. If it is -> Error
 }
 
 /**

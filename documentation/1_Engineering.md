@@ -30,16 +30,16 @@
 
 
 #### RE5: During Standard mode, there are 8 states (combinations taken from RE4):
-1. 0 Main 3, Side 3 (0.25 sec)
-2. 1 Main 4, Side 3 (0.25 sec)
+1. 0 Main 3, Side 3 (1 sec)
+2. 1 Main 4, Side 3 (1 sec)
 3. 2 Main 1, Side 3 (5 sec)
-4. 3 Main 2, Side 3 (0.5 sec)
-5. 4 Main 3, Side 3 (0.25 sec)
-6. 5 Main 3, Side 4 (0.25 sec)
+4. 3 Main 2, Side 3 (1 sec)
+5. 4 Main 3, Side 3 (1 sec)
+6. 5 Main 3, Side 4 (1 sec)
 7. 6 Main 3, Side 1 (3 sec)
-8. 7 Main 3, Side 2 (0.5 sec)
+8. 7 Main 3, Side 2 (1 sec)
 
-*Note: 0.25 and 0.5 were chosen as safety margin is 1 sec.*
+*Note: 0.25 sec tick should be the basis for checking for polling-based interrupts
 
 #### RE6: During Standard mode, Pedestrian light modes depends on the mode of the road they cross (Main Pedestrian - Main Road):
 1. Red -    RE4 modes 2, 3
@@ -77,11 +77,8 @@ Adjust Phase 6 (1 sec), Phase 7 (3 sec), continue normal
 1. Turn to RE12 3 for 6 seconds.
 2. Return to RE13 behavior.
 
-## Non-Functional Requirements
+## Developer Requirement:
 
-#### NRE1: The switching speed must match customer's specifications for all 3 modes and should not deviate more than 1/10th of second.
-
-#### NRE2: For development purposes, 3 modes should be linked to microcontroller's LEDs:
-* LED 1: Standard mode
-* LED 2: Rush mode
-* LED 3: Night mode
+#### DRE1: Operational mode "STOP" has to be introduced.
+The Software would start in this mode, then switch to regular function, as described in RE3.
+This is needed, as once the software is loaded onto the microcontroller, it immediately starts running.
