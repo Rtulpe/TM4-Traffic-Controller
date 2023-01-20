@@ -50,7 +50,7 @@ void configure_led()
     GPIO_PORTK_DEN_R = 0xE7; //Main Road: G7 Y6 R5, Side Road: G2 Y1 R0
     GPIO_PORTK_DIR_R = 0xE7;
 
-    GPIO_PORTL_DEN_R = 0x33; //Main Ped: G5, R4, Side Ped: G1, R1
+    GPIO_PORTL_DEN_R = 0x33; //Main Ped: G5, R4, Side Ped: G1, R0
     GPIO_PORTL_DIR_R = 0x33;
 
     GPIO_PORTM_DEN_R = 0x0F; //enable pin M1
