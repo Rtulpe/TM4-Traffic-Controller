@@ -1,8 +1,11 @@
 #include <cstdio>
 #include "main.h"
 /*
- * Embedded Systems Test & Verification Lab 3 - C code part
  * Prototype for TIVA microcontroller based traffic light controller
+ *
+ * This is unused code, which was made to test the program out before
+ * adapting it to a microcontroller
+ *
  * Rustenis Tolpeznikas & Obed Oyandut
  */
 Lights traffic;

@@ -18,7 +18,7 @@ bool side_ped_flag = false; // button pressed by side road pedestrians
 bool car_sensor_flag = false; // side road car sensor
 bool in_motion = false; // used to avoid flag abusers
 
-int traffic_mode = -1;
+int traffic_mode = -1; // Starts software in stopped state
 int light_state = 0;
 int ticks = 0; // Counting timeouts
 int next_tick = 1; // Sets time out
